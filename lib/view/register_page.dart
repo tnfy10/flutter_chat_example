@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_example/view_destinations.dart';
+import 'package:flutter_chat_example/view/login_page.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -35,20 +35,18 @@ class RegisterPage extends StatelessWidget {
             const SizedBox(height: 30),
             ElevatedButton(
                 onPressed: () {
-                  Navigator.pushNamedAndRemoveUntil(
+                  Navigator.pushAndRemoveUntil(
                       context,
-                      ViewDestinations.login,
-                      (route) => false
-                  );
+                      MaterialPageRoute(
+                          builder: (context) => const LoginPage()),
+                      (route) => false);
                 },
                 style: ButtonStyle(
-                    fixedSize:
-                    MaterialStateProperty.all(const Size(320, 48))),
+                    fixedSize: MaterialStateProperty.all(const Size(320, 48))),
                 child: const Text('회원가입 완료')),
           ],
         ),
       ),
     );
   }
-
 }

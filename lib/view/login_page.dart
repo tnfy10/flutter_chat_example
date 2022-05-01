@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_example/view/chat_list_page.dart';
 import 'package:flutter_chat_example/view/register_page.dart';
-import 'package:flutter_chat_example/view_destinations.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -40,7 +39,10 @@ class LoginPage extends StatelessWidget {
                     const SizedBox(height: 30),
                     ElevatedButton(
                         onPressed: () {
-                          Navigator.pushNamed(context, ViewDestinations.chatList);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const ChatListPage()));
                         },
                         style: ButtonStyle(
                             fixedSize:
@@ -49,7 +51,10 @@ class LoginPage extends StatelessWidget {
                     const SizedBox(height: 10),
                     ElevatedButton(
                         onPressed: () {
-                          Navigator.pushNamed(context, ViewDestinations.register);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const RegisterPage()));
                         },
                         style: ButtonStyle(
                             fixedSize:
