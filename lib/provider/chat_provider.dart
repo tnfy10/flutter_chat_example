@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/io.dart';
 
 class ChatProvider extends ChangeNotifier {
-  final url = "http://myeoru.iptime.org:3000";
   final List<Map> chatMapList = [];
 
   void sendMessage(IOWebSocketChannel channel, Map<String, String> msg) {
@@ -24,10 +23,10 @@ class ChatProvider extends ChangeNotifier {
     });
   }
 
-  Future<void> chatListRequest() async {
-    var response = await http.get(Uri.parse("$url/chat"));
-    print("${response.statusCode}");
-    print("${response.body}");
+  Future<void> chatListRequest(String ip) async {
+    var response = await http.get(Uri.parse("http://$ip/chat"));
+    debugPrint("${response.statusCode}");
+    debugPrint(response.body);
 
     var data = jsonDecode(response.body);
 

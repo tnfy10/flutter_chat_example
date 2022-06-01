@@ -14,20 +14,21 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPage extends State<RegisterPage> {
   var _validate = true;
+  var _ipCheck = true;
   var _idCheck = true;
   var _pwdCheck = true;
   var _pwd2Check = true;
   var _nickNameCheck = true;
 
-  Future<http.Response> registerPostRequest(Map data) async {
-    const url = 'http://myeoru.iptime.org:3000/register';
+  Future<http.Response> registerPostRequest(String ip, Map data) async {
+    var url = 'http://$ip/register';
 
     var body = json.encode(data);
 
     var response = await http.post(Uri.parse(url),
         headers: {"Content-Type": "application/json"}, body: body);
-    print("${response.statusCode}");
-    print("${response.body}");
+    debugPrint("${response.statusCode}");
+    debugPrint(response.body);
 
     return response;
   }
@@ -52,6 +53,7 @@ class _RegisterPage extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final ipController = TextEditingController();
     final idController = TextEditingController();
     final pwdController = TextEditingController();
     final pwd2Controller = TextEditingController();
@@ -69,6 +71,14 @@ class _RegisterPage extends State<RegisterPage> {
           child: Column(
             children: [
               TextField(
+                controller: ipController,
+                decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    label: const Text('IP'),
+                    errorText: _ipCheck ? null : '접속하실 IP를 입력해주세요'),
+              ),
+              const SizedBox(height: 15),
+              TextField(
                 controller: idController,
                 decoration: InputDecoration(
                     border: const OutlineInputBorder(),
@@ -83,8 +93,8 @@ class _RegisterPage extends State<RegisterPage> {
                   label: const Text('비밀번호'),
                   errorText: _pwdCheck
                       ? _validate
-                      ? null
-                      : '비밀번호가 일치하지 않습니다.'
+                          ? null
+                          : '비밀번호가 일치하지 않습니다.'
                       : '비밀번호를 입력해주세요',
                 ),
                 obscureText: true,
@@ -99,8 +109,8 @@ class _RegisterPage extends State<RegisterPage> {
                     label: const Text('비밀번호 확인'),
                     errorText: _pwd2Check
                         ? _validate
-                        ? null
-                        : '비밀번호가 일치하지 않습니다.'
+                            ? null
+                            : '비밀번호가 일치하지 않습니다.'
                         : '비밀번호를 입력해주세요'),
                 obscureText: true,
                 enableSuggestions: false,
@@ -116,25 +126,27 @@ class _RegisterPage extends State<RegisterPage> {
               const SizedBox(height: 30),
               ElevatedButton(
                   onPressed: () {
+                    final ip = ipController.text.trim();
                     final id = idController.text.trim();
                     final pwd = pwdController.text.trim();
                     final pwd2 = pwd2Controller.text.trim();
                     final nickName = nickNameController.text.trim();
 
-                    if (id.isNotEmpty &&
+                    if (ip.isNotEmpty &&
+                        id.isNotEmpty &&
                         pwd.isNotEmpty &&
                         pwd2.isNotEmpty &&
                         nickName.isNotEmpty) {
                       if (pwd == pwd2) {
                         Map data = {"id": id, "pwd": pwd, "nickName": nickName};
 
-                        registerPostRequest(data).then((value) {
+                        registerPostRequest(ip, data).then((value) {
                           if (value.statusCode == 204) {
                             Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => const LoginPage()),
-                                    (route) => false);
+                                (route) => false);
                           } else {
                             _showDialog(context, '잠시 후 다시 시도해주세요.');
                           }
@@ -146,6 +158,7 @@ class _RegisterPage extends State<RegisterPage> {
                       }
                     } else {
                       setState(() {
+                        _ipCheck = ip.isNotEmpty;
                         _idCheck = id.isNotEmpty;
                         _pwdCheck = pwd.isNotEmpty;
                         _pwd2Check = pwd2.isNotEmpty;
@@ -154,7 +167,8 @@ class _RegisterPage extends State<RegisterPage> {
                     }
                   },
                   style: ButtonStyle(
-                      fixedSize: MaterialStateProperty.all(const Size(320, 48))),
+                      fixedSize:
+                          MaterialStateProperty.all(const Size(320, 48))),
                   child: const Text('회원가입 완료')),
             ],
           ),

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_chat_example/provider/chat_provider.dart';
@@ -10,14 +8,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_channel/io.dart';
 
 class ChatRoomPage extends StatefulWidget {
-  const ChatRoomPage({Key? key}) : super(key: key);
+  final String ip;
+
+  const ChatRoomPage({Key? key, required this.ip}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _ChatRoomPage();
 }
 
 class _ChatRoomPage extends State<ChatRoomPage> {
-  final channel = IOWebSocketChannel.connect('ws://myeoru.iptime.org:3000');
+  late IOWebSocketChannel channel;
   final msgController = TextEditingController();
   final listController = ScrollController();
   final focusNode = FocusNode();
@@ -31,11 +31,13 @@ class _ChatRoomPage extends State<ChatRoomPage> {
   @override
   void initState() {
     super.initState();
+    channel = IOWebSocketChannel.connect('ws://${widget.ip}');
+
     getNickName();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       Provider.of<ChatProvider>(context, listen: false).updateChat(channel);
-      Provider.of<ChatProvider>(context, listen: false).chatListRequest();
+      Provider.of<ChatProvider>(context, listen: false).chatListRequest(widget.ip);
     });
   }
 
